@@ -1,8 +1,8 @@
 package com.formation.persistence.entities;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -42,7 +42,7 @@ public class Panier {
 	
 	public Panier() {
 		super();
-		produitDuPanier = new TreeSet<>();
+		produitDuPanier = new HashSet<>();
 	}
 
 
@@ -54,7 +54,7 @@ public class Panier {
 		this.prix = prix;
 		this.nb = nb;
 		this.libelle = libelle;
-		this.produitDuPanier = new TreeSet<>();
+		this.produitDuPanier = new HashSet<>();
 	}
 	
 	

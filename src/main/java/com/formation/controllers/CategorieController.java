@@ -1,8 +1,9 @@
 package com.formation.controllers;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,16 +14,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.formation.exceptions.NotFoundException;
+import com.formation.dto.CategorieFull;
 import com.formation.persistence.entities.Categorie;
-import com.formation.persistence.repositories.ICategorieRepository;
+import com.formation.services.ICategorieService;
 
 @RestController //spring fait de cette class un controler rest =>il en fait un singleton, on a pas à faire d'instance, spring le fait auto
 @RequestMapping(path = "/categorie") //on associe à ce controller un "morceau" d'URL
 public class CategorieController {
 	
 	@Autowired
-	ICategorieRepository repo;
+	private ModelMapper mapper;
+	
+	@Autowired
+	ICategorieService service;
 	
 	
 	public CategorieController() {
@@ -30,35 +34,33 @@ public class CategorieController {
 	}
 	
 	@RequestMapping(path = "/list", method = RequestMethod.GET)
-	public List<Categorie> findAll(){
-		return null;
+	public List<CategorieFull> findAll(){
+		return service.findAll()
+				.stream()
+				.map(c -> mapper.map(c, CategorieFull.class))
+				.collect(Collectors.toList());
 		
 	}
 
 
 	@GetMapping(path="/{identifiant}")  // version cool de @RequestMapping(path="/{identifiant}", method = RequestMethod.GET) 
-	public Categorie findOne (@PathVariable(name = "identifiant") Long id) {		
-		Optional<Categorie> opt = repo.findById(id);
-		if (opt.isEmpty()) {
-			throw new NotFoundException("La catégorie "+id+" n'a pas été trouvée");
-		}
-		return opt.get();
+	public CategorieFull findOne (@PathVariable(name = "identifiant") Long id) {		
+		return mapper.map(service.findById(id).get(), CategorieFull.class);
 	}
 	
 	@DeleteMapping(path="/{id}")  
 	public void delete (@PathVariable Long id) {
-		Categorie cl = findOne(id);
 		try {
-			repo.delete(cl);
+			service.delete(id);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	
-	@PostMapping(path="/{}") //reçoit un objet commande en parametre et le sauve dans le repository pour qu'il le sauve dans la bd
-	public Categorie save(@RequestBody Categorie cl) {
-		return repo.save(cl);
+	@PostMapping() //reçoit un objet categorie en parametre et le sauve dans le repository pour qu'il le sauve dans la bd
+	public CategorieFull save(@RequestBody CategorieFull cat) {
+		return mapper.map(service.save(mapper.map(cat, Categorie.class)), CategorieFull.class);
 		
 	}
 

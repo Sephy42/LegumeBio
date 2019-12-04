@@ -35,6 +35,11 @@ public class Categorie {
 	}
 
 
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+
 	public String getLibelle() {
 		return libelle;
 	}

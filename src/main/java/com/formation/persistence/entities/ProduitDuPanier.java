@@ -41,6 +41,10 @@ public class ProduitDuPanier {
 	}
 
 
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 
 	public Produit getProduit() {
 		return produit;
